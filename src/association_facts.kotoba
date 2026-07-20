@@ -1,0 +1,76 @@
+(ns association-facts
+  (:export [main association-covered? entry-count entry-field topic-count
+            topic by-topic-count by-topic-id coverage-note]))
+
+(defn association-covered? [association :string] :i64
+  (string=? association "mpoa"))
+
+(defn entry-count [association :string] :i64
+  (if (association-covered? association) 2 0))
+
+(defn valid-entry? [association :string index :i64] :i64
+  (if (association-covered? association)
+    (if (= index 0) 1 (if (= index 1) 1 0))
+    0))
+
+(defn entry-field [association :string index :i64 field :string]
+  [:option :string]
+  (if (valid-entry? association index)
+    (if (= index 0)
+      (cond
+        (string=? field "id") (option-some-of [:option :string] "mpoa.founding-1999-rationalisation")
+        (string=? field "title") (option-some-of [:option :string] "MPOA founding via rationalisation of plantation-industry bodies (Introduction)")
+        (string=? field "association") (option-some-of [:option :string] "mpoa")
+        (string=? field "isic") (option-some-of [:option :string] "0126")
+        (string=? field "country") (option-some-of [:option :string] "MYS")
+        (string=? field "kind") (option-some-of [:option :string] "governance-program")
+        (string=? field "url") (option-some-of [:option :string] "https://www.mpoa.org.my/introduction.php")
+        (string=? field "url-provenance") (option-some-of [:option :string] "official-mpoa-org-my")
+        (string=? field "established-date") (option-some-of [:option :string] "1999")
+        (string=? field "retrieved-at") (option-some-of [:option :string] "2026-07-17")
+        :else (option-none-of [:option :string]))
+      (cond
+        (string=? field "id") (option-some-of [:option :string] "mpoa.predecessor-united-planting-association-1897")
+        (string=? field "title") (option-some-of [:option :string] "United Planting Association of Malaysia, MPOA predecessor body active since 1897 (Introduction)")
+        (string=? field "association") (option-some-of [:option :string] "mpoa")
+        (string=? field "isic") (option-some-of [:option :string] "0126")
+        (string=? field "country") (option-some-of [:option :string] "MYS")
+        (string=? field "kind") (option-some-of [:option :string] "governance-program")
+        (string=? field "url") (option-some-of [:option :string] "https://www.mpoa.org.my/introduction.php")
+        (string=? field "url-provenance") (option-some-of [:option :string] "official-mpoa-org-my")
+        (string=? field "established-date") (option-some-of [:option :string] "1897")
+        (string=? field "retrieved-at") (option-some-of [:option :string] "2026-07-17")
+        :else (option-none-of [:option :string])))
+    (option-none-of [:option :string])))
+
+(defn topic-count [association :string index :i64] :i64
+  (if (valid-entry? association index) 1 0))
+
+(defn topic [association :string index :i64 topic-index :i64]
+  [:option :string]
+  (if (valid-entry? association index)
+    (if (= topic-index 0)
+      (option-some-of [:option :string] "governance")
+      (option-none-of [:option :string]))
+    (option-none-of [:option :string])))
+
+(defn by-topic-count [association :string candidate :string] :i64
+  (if (association-covered? association)
+    (if (string=? candidate "governance") 2 0)
+    0))
+
+(defn by-topic-id [association :string candidate :string index :i64]
+  [:option :string]
+  (if (string=? candidate "governance")
+    (if (valid-entry? association index)
+      (entry-field association index "id")
+      (option-none-of [:option :string]))
+    (option-none-of [:option :string])))
+
+(defn coverage-note [association :string] [:option :string]
+  (if (association-covered? association)
+    (option-some-of [:option :string]
+      "cloud-itonami-assoc-0126-mys-mpoa Wave 0 (ADR-2607141700): 2 MPOA entries seeded with mpoa.org.my citations. Extend the sovereign catalog; never fabricate an id/url.")
+    (option-none-of [:option :string])))
+
+(defn main [] :i64 0)
