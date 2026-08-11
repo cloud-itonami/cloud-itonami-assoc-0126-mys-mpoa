@@ -3,7 +3,7 @@
             [clojure.java.shell :as shell]
             [clojure.test :refer [deftest is testing]]
             [kotoba.compiler.core :as compiler]
-            [kotoba.compiler.ir :as ir]))
+            [kotoba.kir :as ir]))
 
 (def source (slurp "src/association_facts.kotoba"))
 (defn call [kir function & args] (ir/execute kir function (vec args)))
@@ -32,8 +32,8 @@
                                        fields)))
                        (range (call kir 'entry-count "mpoa")))]
     (is (= expected observed))
-    (is (= 1 (call kir 'association-covered? "mpoa")))
-    (is (zero? (call kir 'association-covered? "gapki")))
+    (is (true? (call kir 'association-covered? "mpoa")))
+    (is (false? (call kir 'association-covered? "gapki")))
     (is (= [1 1] (mapv #(call kir 'topic-count "mpoa" %) [0 1])))
     (is (= ["governance" "governance"]
            (mapv #(present (call kir 'topic "mpoa" % 0)) [0 1])))
