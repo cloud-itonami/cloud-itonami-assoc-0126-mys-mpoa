@@ -57,8 +57,8 @@ itself remains MPOA's; this repo stores only citation metadata
 ## Verification
 
 ```sh
-clojure -M:test
-clojure -M:lint
+kbb -M:test
+kbb -M:lint
 ```
 
 The JVM is a compiler/test host only. Qualification executes reference
